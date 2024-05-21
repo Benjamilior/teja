@@ -2,6 +2,7 @@ import requests
 import time
 import json
 import time
+import pandas as pd
 import datetime  
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -31,6 +32,40 @@ query_params = {"appId": "BuySmart", "ts": "1709842514374"}
 # Lista de SKUs a probar
 skus1 ={ "7802215108174": "11242"}
 skus = {
+   
+    "7613037071399": "999654",
+    "7791290791466": "1209301",
+    "7802000014925": "1015660",
+    "7802215508530": "2925",
+    "7802215508523": "2977",
+    "7802107000937": "1400350",
+    "220": "1122330",
+    "768": "284897",
+    "628": "281913",
+    "7802420002106": "848856",
+    "12255": "1345284",
+    "7802800533589": "690517",
+    "7802000015991": "1042843",
+    "7802000014703": "891612",
+    "7802420151477": "279055",
+    "7802420151057": "279067",
+    "7802420001840": "733838",
+    "7793100111891": "940497",
+    "7622201693091": "485196",
+    "7797453001533": "882004",
+    "7803960000362": "542510",
+    "7801620005160": "536716",
+    "7802920007410": "859412",
+    "7802118000018": "292473",
+    "7802575533586": "1059090",
+    "7803480020079": "5361",
+    "7797453001571": "882008",
+    "7801300000447": "355301",
+    "8006550340230": "881569",
+    "7802420002182": "815753",
+    "8076809579346": "660106",
+    "41333000985": "283025",
+    "23025": "861623",
     "7802215108174": "11242",
     "7702367463421": "299055",
     "7802410001621": "699590",
@@ -100,7 +135,7 @@ skus = {
     "7802940001795": "1020246",
     "8001665700047": "739669",
     "8005121216011": "336878",
-    "7802940730701": "603655",
+    "7802940730701": "126380",
     "7809611708410": "689308",
     "7809611700513": "742351",
     "7802626161010": "279311",
@@ -574,6 +609,7 @@ for sku, value in skus.items():
         print(f"SKU {sku} no es válido.")
 
 # Enviar los datos a Google Sheets
+
 values = price_data
 result = sheet.values().update(
     spreadsheetId=SPREADSHEET_ID,
@@ -597,6 +633,39 @@ data = {"":now_str}
 json_data = json.dumps(data)
 values = [[json_data]]
 result = sheet.values().update(spreadsheetId=SPREADSHEET_ID,
-                            range='Lider!D2',#CAMBIAR
+                            range='Lider!F2',#CAMBIAR
                             valueInputOption='USER_ENTERED',
                             body={'values':values}).execute()     
+
+competitor = "Lider"  # Cambiar 
+
+df = pd.DataFrame(price_data)
+
+# Enviar datos a otro Google Sheets
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+KEY = 'key.json'
+NEW_SPREADSHEET_ID = '1y-NLrx7pewwMP1OGzLTZcpolTBkhiz5yZAhTohBGFKE'  # ID de la nueva hoja de cálculo
+
+creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
+service = build('sheets', 'v4', credentials=creds)
+sheet = service.spreadsheets()
+
+# Obtener la última fila con datos en la nueva hoja
+result = sheet.values().get(spreadsheetId=NEW_SPREADSHEET_ID, range='tejamarket!A:A').execute() #Cambiar donde llega la info
+values = result.get('values', [])
+last_row = len(values) + 1  # Obtener el índice de la última fila vacía
+
+# Convertir resultados a la lista de valores
+values = [[row[0], competitor, row[1], row[2], now_str] for _, row in df.iterrows()]
+
+
+# Insertar los resultados en la nueva hoja después de la última fila
+update_range = f'tejamarket!A{last_row}:E{last_row + len(values) - 1}' #Cambiar
+result = sheet.values().update(
+    spreadsheetId=NEW_SPREADSHEET_ID,
+    range=update_range,
+    valueInputOption='USER_ENTERED',
+    body={'values': values}
+).execute()
+
+print(f"Datos insertados correctamente en la nueva hoja de Google Sheets en el rango {update_range}")

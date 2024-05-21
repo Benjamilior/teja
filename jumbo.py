@@ -3,6 +3,7 @@ import time
 import json
 import time
 import datetime  
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -25,15 +26,16 @@ sheet = service.spreadsheets()
 
 
 # Diccionario de URLs
-url2 = {"Granosmanare22": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/syllium-husk-organico-manare-200-g-1881535"}
-
+url2 = {"Granosmanare21":"https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-m-rengo-cab-sau-m-sweet-750cc-12-8-1961000"
+        
+        }
 url ={
-
+    "7613037071399":"https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-nescafe-espresso-100-g",
     "7791290791466": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/omo-ps-dilu-500ml",
     "7802940001795": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/carmenere-toro-de-piedra-gran-reserva-14-5-750-cc",
     "7802940730701": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cabernet-sauvignon-toro-de-piedra-14-750-cc",
     "7802000014925": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/avena-instantanea-quaker-900-g-2",
-    "7802107000937": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cer-kunstmann-vald-pal-lag-470cc-5-2-1939660",
+    "41390008085": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cer-kunstmann-vald-pal-lag-470cc-5-2-1939660",
     "220": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jamon-colonial-pf-granel-2",
     "768": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jamon-colonial-san-jorge-granel",
     "628": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jamon-pierna-acaramelado-pf-granel-2",
@@ -58,7 +60,7 @@ url ={
     "8006550340230": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/licor-ramazzotti-rosato-700-ml",
     "7802615006551": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/arroz-grado-1-miraflores-1-kg-grano-largo-y-ancho",
     "7702367003900": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-en-aceite-van-camp-s-104-g-dr",
-    "7702367003917": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-en-agua-van-camp-s-104-g-dr/p?idsku=32675&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp91SxCvxolkHwNV5DqIZb0gATrYP66995I2pYzxIdE0BuQdMiHLApUaAlqUEALw_wcB&gclsrc=aw.",
+    "7702367003917": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-en-agua-van-camp-s-104-g-dr",
     "7801230004409": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-lomitos-en-aceite-drenado-lata-104-g",
     "7801230004416": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-lomitos-en-agua-drenado-lata-104-g",
     "7702367463421": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/atun-lomito-van-camp-s-agua-208gr-dr",
@@ -72,7 +74,7 @@ url ={
     "8801055709212": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-nescafe-espresso-100-g",
     "8801055709274": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-nescafe-200-g-fina-seleccion",
     "7802950002126": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-nescafe-tradicion-170-g",
-    "7804000002490": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/barra-proteina-cranberries-5-un/p?idsku=92880&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp_Jg_NzGOWi022SfWPy_8Z6iwHyjv5qA3r97J46flvKn8xzPwkMjekaApxMEALw_wcB&gclsrc=aw.",
+    "7804000002490": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/barra-proteina-cranberries-5-un",
     "7802710350504": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/helado-savory-sabor-chocolate-vainilla-y-frutilla-1-l",
     "7802710835155": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/helado-savory-1-l-chirimoya-alegre",
     "7802710835216": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/helado-savory-1-l-pasas-al-ron",
@@ -81,12 +83,12 @@ url ={
     "7702010130243": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cepillo-dental-colgate-triple-accion-suave-2-unid",
     "7702010130250": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cepillo-de-dientes-colgate-2-unid-twister-med",
     "7613287593481": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-chocapic-receta-original-360-g",
-    "7802420007934": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-pillows-caja-480-g-cola-cao-2/p?idsku=1884&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp-2XmzW6mxlaRXsx3r_9aHXgfhm1OLg5LF2JprkV-JawwEpUHuDGMoaAjb7EALw_wcB&gclsrc=aw.",
-    "7802420007927": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-cola-cao-caja-500-g-quadritos/p?idsku=1812&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp8mDNNM-BudtP9xNj_IJo2KqjDNIBUmLdZ1mFqY7mvPbzobM4aJ19EaAnFwEALw_wcB&gclsrc=aw.",
+    "7802420007934": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-pillows-caja-480-g-cola-cao-2",
+    "7802420007927": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-cola-cao-caja-500-g-quadritos",
     "7896004004549": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-kelloggs-caja-500-g-cornflakes-hojuelas-de-maiz",
     "7613035652101": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-nestle-330-g-fitness",
     "7802420007958": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-cola-cao-480-g-pillows-manjar",
-    "7613287593283": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-milo-330-g/p?idsku=35076&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp93-O-F2YAnl2JHzxD3XmNDc6_Tgs9u7-YRaezbjwGziFPgJHqDNBQaApbLEALw_wcB&gclsrc=aw.",
+    "7613287593283": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-milo-330-g",
     "7802000012587": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-quaker-hearts-320-g",
     "7804615340567": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-kross-golden-ale-lata-470cc-1956804",
     "7802107000869": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-kunstmann-botella-480-cc-gran-torobayo-nacional",
@@ -172,7 +174,7 @@ url ={
     "7802920203409": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/mantequilla-colun-pan-250-g-sin-sal",
     "21000026968": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/mayonesa-kraft-frasco-397-g",
     "21000026326": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/mayonesa-kraft-pote-794-g",
-    "7801620853396": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-naranja-sin-azucar-anadida-15-l/p?idsku=875&gclid=Cj0KCQjwhfipBhCqARIsAH9msbkd1Zcszfrp50aMapnz5_MPq0ix1ynxhczxov8Pl0_iK55qSBiK7egaAhk3EALw_wcB&gclsrc=aw.",
+    "7801620853396": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-naranja-sin-azucar-anadida-15-l",
     "7809611700667": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nuggets-de-pollo-super-pollo-congelado-bolsa-400-g",
     "7802100000330": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/pack-cerveza-heineken-6-unid-350-cc-c-u",
     "7802130002274": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-corona-botella-6x330cc-2",
@@ -263,12 +265,12 @@ url ={
     "7802820990102": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/agua-mineral-sin-gas-vital-botella-990-ml-sin-gas",
     "682430611744": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/agua-mineral-con-gas-voss-sparkling-800-ml",
     "7802410001379": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aji-color-15-g-cuisine-and-co-1770133",
-    "7802337910945": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aji-crema-traverso-vintage-450-g/p?idsku=76226&gclid=Cj0KCQjw1OmoBhDXARIsAAAYGSHS9rBfFc78dnke7vZu4bOZWCgBSNsHzk5yjtAaPJNtwOicNs2FqYcaAlCmEALw_wcB&gclsrc=aw.",
+    "7802337910945": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aji-crema-traverso-vintage-450-g",
     "7802351001803": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aji-jalapeno-250-g",
     "7802575533616": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/alimento-perro-cachorro-animal-planet-pequenos-25-kg-1756198",
     "8006550342067": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/licor-ramazzotti-violetto-700cc-15-1939574",
     "7800120162922": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/avena-instantanea-selecta-900-g",
-    "7803908006821": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/barra-de-cereal-guallarauco-pina-6un-1921740/p?idsku=112233&gclid=CjwKCAjwvfmoBhAwEiwAG2tqzDLPOacXd4bFD418Si7sMBTmKD7whgNbW0k3qapzQ1Sypiomwn5MKRoCISIQAvD_BwE&gclsrc=aw.",
+    "7803908006821": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/barra-de-cereal-guallarauco-pina-6un-1921740",
     "6971549921016": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-aloe-hola-hosan-original-1-5l",
     "7801610002650": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-fanta-3-l-botella-desechable",
     "7801620001223": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-kem-3-l-botella-desechable",
@@ -283,22 +285,21 @@ url ={
     "7804642980484": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/butifarra-schwencke-250-g/eli",
     "7896019208451": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-cruzeiro-liofilizado-90-g",
     "7801806000026": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-molido-cafe-d-aroma-bolsa-250-g-mezcla-forte",
-    "8002200301415": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-descafeinado-kimbo-250-g",
+    "8002200301415": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-descafeinado-kimbo-250",
     "7613287581099": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-decaf-tarro-nescafe-100gr-1885273",
     "7802410001621": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/caldo-gourmet-polvo-sabor-carne-6-unid",
     "7802410305033": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/callampas-gourmet-sobre-35-grs",
     "7802200230293": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/caluga-calaf-suny-bolsa-360gr-1932749",
     "8445290091833": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/helado-chamonix-pina-2-5lt-2022-1914049",
     "8410036009090": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/champana-cordon-negro-freixenet-750-cc-2",
-    "7891024078174": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cepillo-de-dientes-colgate-bamboo/p?idsku=81302&srsltid=AfmBOorIKRlagYafAfGkgw8cH19c6zjAbzqg_ktjBzdm48tvgeOUYtbQ4",
-    "7790520992963": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cera-blem-ceramicos-rojo-800ml-1872156/p?idsku=101878&gclid=CjwKCAjwvfmoBhAwEiwAG2tqzMcbvKyn8HFzJQddeyZDr-YyGFJhngRXPrBtm3FPSSDiOs3eq362aBoCe8gQAvD_BwE&gclsrc=aw.",
+    "7891024078174": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cepillo-de-dientes-colgate-bamboo",
+    "7790520992963": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cera-blem-ceramicos-rojo-800ml-1872156",
     "7804000001455": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-en-linea-kids-hojuelas-chocolate-330-g",
     "7800120166777": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cereal-costa-mono-choc-260-gr-1885937",
     "7809562401224": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerezas-perello-marrasquino-frasco-500-g",
     "7802100003218": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerv-coors-stubby-5-0g-bot-355cc",
     "7804615340000": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-kross-golden-ale-330-cc",
     "7804615340369": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-kross-pilsner-710-ml",
-    "7802107000227": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/pack-cerveza-kunstmann-arandano-4-unid-330-cc-c-u",
     "4066600219514": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-lemon-radler-lata-2-5-500-ml",
     "7802100002747": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-royal-lata-470cc-unidad-1675318",
     "4053400279398": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerveza-schofferhofer-pomelo-500-cc",
@@ -413,11 +414,11 @@ url ={
     "7805025692079": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/velas-luminosa-211-g-4-unid-gigantes-duracion",
     "7802185000751": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-espald-azimut-ens-14g-bot-750cc",
     "7804335171113": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/merlot-vina-santa-rita-700-cc-carmen",
-    "7808729601200": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/ensamblaje-cabernet-sauvignon-carmenere-vina-casas-patronales-750-ml/p?idsku=25307&srsltid=AfmBOoq9Rc7uuOzp54OhkyARq-jTBQeqZ2USIwkxXjap5PzGL7BDtBOse",
+    "7808729601200": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/ensamblaje-cabernet-sauvignon-carmenere-vina-casas-patronales-750-ml",
     "7804320256900": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/chardonnay-casillero-del-diablo-vina-concha-y-toro-750-cc",
     "7804320272252": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cabernet-sauvignon-reserva-privada-casillero-del-diablo-750-ml",
     "7804454000882": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/merlot-vina-casa-silva-750-cc-dona-dominga",
-    "7804335004589": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/carmenere-carmen-frida-kalho-14-botella-750-cc/p?idsku=61224&gclid=Cj0KCQjwpompBhDZARIsAFD_Fp-xHUDjIu3pS9ClLQSjEMsHf_2tft-mMpBs-dEpQEa-iVY0xlNMs2kaAi-2EALw_wcB&gclsrc=aw.",
+    "7804335004589": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/carmenere-carmen-frida-kalho-14-botella-750-cc",
     "7804300143688": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/carmenere-gato-premium-13-750-cc",
     "7804300143664": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/sauvignon-blanc-gato-premium-13-botella-750-cc",
     "7804300157388": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-gato-dulce-rose-1-5lt-8-1955161",
@@ -447,26 +448,26 @@ url ={
     "7802920008196": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/yoghurt-griego-light-papaya-120-g",
     "7613030049883": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/leche-condensada-nestle-lata-397-g",
     "7808760900478": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aceite-de-oliva-huasco-botella-500-ml-extra-virgen-2",
-    "7808760900522": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aceite-de-oliva-huasco-botella-2-l-2/p?idsku=1445&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQzws2wDqoyIWGx-LUTpysqYeaS3dQ9sfhlsGQM5JnIBtz7lX0V5o0aAr7UEALw_wcB&gclsrc=aw.",
+    "7808760900522": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aceite-de-oliva-huasco-botella-2-l-2",
     "7805000321567": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/hellmann-s-supreme-mayonesa-clasica-frasco-380gr-1888094",
     "7805000301484": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/mayonesa-hellmanns-93-g",
     "7896019208468": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-cruzeiro-frasco-170-g-liofilizado",
     "8858135000059": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/base-de-coco-real-thai-250ml",
     "7802575353047": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-tomate-carozzi-doypack-200-g-pomarola-natural",
-    "7802810002099": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aceite-maravilla-chef-1-l/p?idsku=13591&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQSwZsl7LRR_INYthqAUkbhblCLqzu_AaPP8LquV0XAUW1gyWZPcGwaApoKEALw_wcB&gclsrc=aw.",
+    "7802810002099": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aceite-maravilla-chef-1-l",
     "8711000509388": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-jacobs-kroenung-gold-200-g",
     "7613031891344": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/leche-condensada-leche-sur-lata-397-g-azucarada",
-    "7613037071368": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-nescafe-frasco-100-g-cap-colombie-arabico-granulado/p?idsku=1730&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWSXvZVY8eetSnej-YVgrFumT45zr9jYvjmFu7B7HfzQndlsxBV8qe0aAh0vEALw_wcB&gclsrc=aw.",
-    "7707211631469": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-juan-valdez-frasco-95-g-liofilizado/p?idsku=1705&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWRRwzi0VO8JokdUgbQ8ycVoPPKvXuEhxHDougwKe06UIpCUXiBoBngaAhxAEALw_wcB&gclsrc=aw.",
+    "7613037071368": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-nescafe-frasco-100-g-cap-colombie-arabico-granulado",
+    "7707211631469": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-juan-valdez-frasco-95-g-liofilizado",
     "7613032203795": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-instantaneo-nescafe-tradicion-170-g-2",
-    "7802575341136": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-tomate-toscana-carozzi-doypack-200-g-a-la-bolognesa/p?idsku=3356&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWTdiaKDcUsalZOP6MeYlgN9C5nVtFTEPjqkiwdOOL1QNSQwegaX5jcaAhkbEALw_wcB&gclsrc=aw.",
-    "7802950012316": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-tomate-maggi-tuco-con-carne-245-g/p?idsku=3375&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQFQvc2jo3Ku9Lg3pVfgq21COVHCtCYbNbBx-j5aCi7nXCFNCK3WScaAgPREALw_wcB&gclsrc=aw.",
+    "7802575341136": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-tomate-toscana-carozzi-doypack-200-g-a-la-bolognesa",
+    "7802950012316": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-tomate-maggi-tuco-con-carne-245-g",
     "7801875047137": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/te-ceylan-supremo-premium-200-g-100-unid",
     "7803110102212": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/arroz-grado-1-banquete-1-kg-premium-grano-largo-y-ancho",
-    "7801505231950": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/azucar-dorada-iansa-bolsa-500-g/p?idsku=1644&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWRYNWZdsXWFULVsHyXrF-frSvrNVhPSJGW8emfh0gVvieerWBmv1ikaArCFEALw_wcB&gclsrc=aw.",
+    "7801505231950": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/azucar-dorada-iansa-bolsa-500-g",
     "7802575004635": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/tallarines-n-87-carozzi-bolsa-400-g-2",
     "8445290118288": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/leche-en-polvo-nido-buen-dia-700g-1930445",
-    "8445290841575": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/alim-fort-milo-450-gr-1962071/p?idsku=126292&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQtwJxrUvOcKqRyuw8WIPBcc5Uffaug7rih1lL5rgqwUkmzY2yH0pEaAn9oEALw_wcB&gclsrc=aw.",
+    "8445290841575": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/alim-fort-milo-450-gr-1962071",
     "781159838477": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-marley-positive-vibration-100gr-1885897",
     "8445290398710": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cafe-nescafe-tradicion-tarro-125-gr-1931230",
     "7802410003182": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/chips-de-chocolate-gourmet-200-g",
@@ -488,17 +489,17 @@ url ={
     "7801610001523": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-coca-cola-15-l-botella-desechable",
     "7801620852955": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/agua-mineral-con-gas-cachantun-16-l-botella-desechable",
     "7801620017552": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-pepsi-3-l-botella-desechable",
-    "9002490214852": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-energizante-red-bull-lata-250-cc-libre-de-azucar/p?idsku=444&gclid=Cj0KCQjwhfipBhCqARIsAH9msbmBxN5y2RDSlRxFJl2kni_4b4xGj3PI0cXx5_m9BJ9vfMAn4YW1j5YaAkjOEALw_wcB&gclsrc=aw.",
+    "9002490214852": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-energizante-red-bull-lata-250-cc-libre-de-azucar",
     "7801620011604": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-naranja-botella-boca-ancha-desechable",
     "7801610001196": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-coca-cola-lata-350-cc",
     "9002490221010": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-energizante-red-bull-lata-355-cc",
     "9002490100070": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-energizante-red-bull-lata-250-cc",
-    "7801620006341": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-light-pina/p?idsku=876&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQGGdkKd0DjeghnsOMheEt_qOqympypgjk7HGJJuyJFBjceFVPKq5waAuMrEALw_wcB&gclsrc=aw.",
-    "7801620000738": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-light-durazno-botella-boca-ancha-desechable/p?idsku=873&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWS1Y2y85gUqRnRfiJGR4NK5xw6M5L2bCxBmHC6c8bgDjPAZCTtGHv8aAq6JEALw_wcB&gclsrc=aw.",
+    "7801620006341": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-light-pina/",
+    "7801620000738": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-light-durazno-botella-boca-ancha-desechable",
     "7801610001295": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-coca-cola-sin-azucar-retornable-2-l-envase",
-    "7801610002261": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-fanta-15-l-botella-desechable/p?idsku=403&gclid=Cj0KCQjw4vKpBhCZARIsAOKHoWQVypA0W8HiMrgLgWzKlHfmYCch2oMmczNLa0XIHeknBjIavw4zZ_8aAqI2EALw_wcB&gclsrc=aw.",
+    "7801610002261": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/bebida-fanta-15-l-botella-desechable",
     "7801620011611": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/nectar-watts-15-l-durazno-botella-boca-ancha-desechable",
-    "7802900003319": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/yog-soprole-1-1-c-cuchara-140-zuca-frut-891081004/p?idsku=123050&gclid=Cj0KCQjwhfipBhCqARIsAH9msbn8WGbT0NclltEaBKLShOiZFfdsphFQVkXar5cnFzfAV5fAaQ4lrvcaAtb5EALw_wcB&gclsrc=aw.",
+    "7802900003319": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/yog-soprole-1-1-c-cuchara-140-zuca-frut-891081004",
     "7501003698742": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/tequila-olmeca-dark-chocolate-700ml-35-1899666",
     "7802100003249": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cerv-coors-stubby-5-0g-bot-355cc-2",
     "7802107000913": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cer-kunstman-vald-pale-al-bot-330cc-5-2-1924619-pak",
@@ -584,7 +585,6 @@ url ={
     "7802410004219": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/pimienta-ajo-gourmet-fco-28-gr-1886592",
     "7802575034014": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/tallarines-n-87-carozzi-bolsa-400-g-espinaca-2",
     "41390001017": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/salsa-de-soya-kikkoman-bajo-en-sodio-botella-de-148-cc",
-    "41390008085": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/kikkom",
     "7802410002253": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/sopa-costilla-con-fideos-gourmet-62-g",
     "7802351001810": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/aji-smoked-250-g",
     "70177197230": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/te-verde-y-menta-twinings-20-g-10-bolsitas",
@@ -596,7 +596,6 @@ url ={
     "7801930001586": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/longanicilla-parr-receta-de-abuelo-280g-1965130",
     "682430611768": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/agua-mineral-con-gas-voss-sparkling-800-ml",
     "7802832000264": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jugo-afe-pera-200cc",
-    "7802832000240": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jugo-afe-tetra-3-unid-x-200-cc-c-u",
     "7791293046242": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/deo-dove-aer-ap-pepino-72h-150ml-1960949",
     "650240035401": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/jabon-en-barra-asepxia-carbon-100-g",
     "79400301161": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/desodorante-femenino-rexona-48-g-clinical-wom",
@@ -632,7 +631,7 @@ url ={
     "17619025188": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/espumante-opera-prima-love-750cc-7-alc-1893437",
     "7804300143657": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/cabernet-sauvignon-gato-premium-13-750-cc",
     "7804300143671": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/merlot-gato-premium-13-750-cc",
-    "7804320933153": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-anejo-san-blas-vina-concha-y-toro-750-ml/p?gclid=Cj0KCQiAuqKqBhDxARIsAFZELmL2OR5knzZP-mSddLwtdecHH0r4_ue5qfKQC4ULH7iHVdYG_Px2oKEaAgV0EALw_wcB&gclsrc=aw.",
+    "7804320933153": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-anejo-san-blas-vina-concha-y-toro-750-ml",
     "7804300157647": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/vino-m-rengo-cab-sau-m-sweet-750cc-12-8-1961000",
     "7804449013309": "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product/espumante-ex-brut-charmat-12-750-cc-2"
 }
@@ -700,3 +699,36 @@ result = sheet.values().update(spreadsheetId=SPREADSHEET_ID,
                             range='jumbo!D2',#CAMBIAR
                             valueInputOption='USER_ENTERED',
                             body={'values':values}).execute()
+competitor = "Jumbo"  # Cambiar 
+
+df = pd.DataFrame(price_data)
+print(df)
+print(df.head)
+
+# Enviar datos a otro Google Sheets
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+KEY = 'key.json'
+NEW_SPREADSHEET_ID = '1y-NLrx7pewwMP1OGzLTZcpolTBkhiz5yZAhTohBGFKE'  # ID de la nueva hoja de cálculo
+
+creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
+service = build('sheets', 'v4', credentials=creds)
+sheet = service.spreadsheets()
+
+# Obtener la última fila con datos en la nueva hoja
+result = sheet.values().get(spreadsheetId=NEW_SPREADSHEET_ID, range='tejamarket!A:A').execute() #Cambiar donde llega la info
+values = result.get('values', [])
+last_row = len(values) + 1  # Obtener el índice de la última fila vacía
+
+# Convertir resultados a la lista de valores
+values = [[row[0], competitor, row[1], row[2], now_str] for _, row in df.iterrows()]
+
+# Insertar los resultados en la nueva hoja después de la última fila
+update_range = f'tejamarket!A{last_row}:E{last_row + len(values) - 1}' #Cambiar
+result = sheet.values().update(
+    spreadsheetId=NEW_SPREADSHEET_ID,
+    range=update_range,
+    valueInputOption='USER_ENTERED',
+    body={'values': values}
+).execute()
+
+print(f"Datos insertados correctamente en la nueva hoja de Google Sheets en el rango {update_range}")
